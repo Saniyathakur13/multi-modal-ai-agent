@@ -29,3 +29,13 @@ processed_image.png
 
 # Logs
 *.log
+# Images/Screenshots
+*.png
+*.jpg
+*.jpeg
+*.webp
+!screenshots/*.png    # Allow screenshots folder if needed later
+
+# Temp files
+temp_*
+*.tmp
