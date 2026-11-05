@@ -1,0 +1,7 @@
+-c constraints.txt
+streamlit
+paddleocr
+paddlepaddle
+opencv-python-headless
+python-dotenv
+requests
