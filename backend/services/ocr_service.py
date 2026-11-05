@@ -17,8 +17,6 @@ print("🔧 Initializing PaddleOCR...")
 ocr = PaddleOCR(
     use_angle_cls=True,
     lang='en',
-    det_model_dir=r"C:\Users\thaku\.paddleocr\whl\det\en\en_PP-OCRv3_det_infer",
-    rec_model_dir=r"C:\Users\thaku\.paddleocr\whl\rec\en\en_PP-OCRv3_rec_infer",
     show_log=False  # CRITICAL: This suppresses the debug output
 )
 print("✅ PaddleOCR initialized successfully!")
