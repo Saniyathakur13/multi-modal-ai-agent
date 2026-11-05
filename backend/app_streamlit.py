@@ -1,0 +1,63 @@
+import streamlit as st
+import os
+from services.ocr_service import extract_text_from_image
+from services.llm_service import analyze_medical_report
+
+st.set_page_config(page_title="Medical AI Agent", page_icon="🏥", layout="wide")
+
+st.title("🏥 Medical AI Agent")
+st.markdown("Upload a medical report image (PNG/JPG) to extract data and generate an AI summary.")
+
+uploaded_file = st.file_uploader("Choose a medical report image", type=["png", "jpg", "jpeg"])
+
+if uploaded_file is not None:
+    # 1. Read the bytes directly from the uploader
+    image_bytes = uploaded_file.getvalue()
+    
+    # 2. Display the image using the bytes (This NEVER breaks)
+    st.image(image_bytes, caption="Uploaded Report", width=400)
+    
+    if st.button("🔍 Analyze Report"):
+        with st.spinner("Extracting text and analyzing..."):
+            # 3. Save the temp file for OCR
+            temp_path = f"temp_{uploaded_file.name}"
+            with open(temp_path, "wb") as f:
+                f.write(image_bytes)
+            
+            # Step 1: OCR
+            extracted_text = extract_text_from_image(temp_path)
+            
+            # Step 2: Analysis
+            result = analyze_medical_report(extracted_text)
+            
+            # Clean up temp file
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+            
+            # Display Results
+            st.success("Analysis Complete!")
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.subheader("👤 Patient Information")
+                st.write(f"**Patient Name:** {result.get('patient_name') or 'N/A'}")
+                st.write(f"**Hemoglobin:** {result.get('hemoglobin') or 'N/A'} g/dl")
+                st.write(f"**WBC:** {result.get('wbc') or 'N/A'} cells/cu")
+                st.write(f"**RBC:** {result.get('rbc') or 'N/A'} mill/cmm")
+                st.write(f"**Platelets:** {result.get('platelets') or 'N/A'} Lakhs/cu")
+            
+            with col2:
+                st.subheader("⚠️ Abnormal Findings")
+                findings = result.get('abnormal_findings', [])
+                if findings:
+                    for f in findings:
+                        st.error(f)
+                else:
+                    st.success("No abnormal findings detected.")
+            
+            st.subheader("🧠 AI Summary")
+            st.info(result.get('summary'))
+            
+            with st.expander("📄 View Extracted OCR Text"):
+                st.text(extracted_text)

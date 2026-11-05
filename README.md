@@ -1,205 +1,33 @@
-You're absolutely right! Let me update the README with accurate information about OpenCV.
+# 🏥 Multi-Modal Medical AI Agent
 
----
-
-# 📄 Simple README.md (Updated)
-
-```markdown
-# 🏥 Medical AI Agent
-
-A simple AI-powered medical report analysis system. Upload medical report images and get structured data automatically.
-
----
+An AI-powered medical report analysis system that extracts structured patient data from medical images using OCR, NLP, and Generative AI.
 
 ## ✨ Features
-
-- 📤 Upload medical report images (PNG, JPG, JPEG)
-- 🔍 Extract text using PaddleOCR
-- 📊 Extract patient name, hemoglobin, WBC, RBC, platelets
-- ⚠️ Detect abnormal values
-- 📝 Generate summary
-- 🎨 Beautiful web interface
-
----
+- **📤 Upload Medical Reports:** Drag and drop PNG/JPG images of medical reports.
+- **🔍 OCR Extraction:** Uses PaddleOCR and OpenCV to preprocess and extract text from images.
+- **📊 NLP Data Parsing:** Uses Regex (Named Entity Recognition) to extract Patient Name, Hemoglobin, WBC, RBC, and Platelets.
+- **⚠️ Abnormal Detection:** Automatically flags values outside normal medical ranges.
+- **🧠 GenAI Summary:** Uses OpenRouter LLM (Llama-3) to generate professional, natural-language medical summaries based on the extracted data.
+- **🌐 Streamlit UI:** Clean, responsive web interface.
 
 ## 🛠️ Tech Stack
+- **Backend:** Python, Streamlit
+- **Computer Vision:** OpenCV, PaddleOCR
+- **NLP:** Regex Pattern Matching, Text Normalization
+- **Generative AI:** OpenRouter API (Llama-3.2-3b)
+- **Deployment:** GitHub, Streamlit Community Cloud
 
-| Backend | Frontend |
-|---------|----------|
-| Python 3.11+ | HTML5 |
-| FastAPI | CSS3 |
-| PaddleOCR | JavaScript |
-| OpenCV | - |
-| Uvicorn | - |
+## 🚀 How It Works
+1. User uploads a medical report image.
+2. OpenCV preprocesses the image (grayscale, denoising).
+3. PaddleOCR extracts the raw text.
+4. Regex parses structured data (e.g., Hemoglobin: 11.5).
+5. Rule-based logic detects abnormal values.
+6. Extracted data is sent to the OpenRouter LLM API to generate a natural-language summary.
 
----
+## 💻 Local Setup
 
-## 📁 Project Structure
-
-```
-multi-modal-ai-agent/
-├── backend/
-│   ├── app.py              # Main server
-│   ├── services/
-│   │   ├── ocr_service.py   # OCR extraction (uses OpenCV)
-│   │   └── llm_service.py   # Data analysis
-│   └── uploads/             # Temp uploads
-├── frontend/
-│   ├── index.html
-│   ├── style.css
-│   └── script.js
-├── .env
-└── requirements.txt
-```
-
----
-
-## 🔧 Why We Use OpenCV
-
-OpenCV is used in `ocr_service.py` for **image preprocessing** before OCR:
-
-| Step | Purpose |
-|------|---------|
-| `cv2.imread()` | Read the uploaded image |
-| `cv2.resize()` | Resize image for better OCR accuracy |
-| `cv2.cvtColor()` | Convert to grayscale (reduces noise) |
-| `cv2.GaussianBlur()` | Remove noise/smoothing |
-| `cv2.imwrite()` | Save processed image for OCR |
-
-### Code Example from `ocr_service.py`
-
-```python
-import cv2
-
-def extract_text_from_image(image_path):
-    # Read image
-    img = cv2.imread(image_path)
-    
-    # Resize for better OCR
-    img = cv2.resize(img, None, fx=2, fy=2)
-    
-    # Convert to grayscale
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    
-    # Remove noise
-    gray = cv2.GaussianBlur(gray, (3, 3), 0)
-    
-    # Save processed image
-    cv2.imwrite("processed.png", gray)
-```
-
-**Without OpenCV** → Poor OCR accuracy  
-**With OpenCV** → Better text extraction
-
----
-
-## 🚀 Quick Start
-
-### 1. Install
-```bash
-# Create virtual environment
-python -m venv venv
-venv\Scripts\activate  # Windows
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 2. Run
-```bash
-cd backend
-python app.py
-```
-
-### 3. Open
-```
-http://localhost:8001
-```
-
----
-
-## 📊 How It Works
-
-```
-Upload Image 
-    ↓
-OpenCV Preprocess (resize, grayscale, denoise)
-    ↓
-PaddleOCR Extract Text
-    ↓
-Regex Parse Data
-    ↓
-Detect Abnormal
-    ↓            
-Show Results
-```
-
-### Extraction Patterns
-
-| Field | Pattern |
-|-------|---------|
-| Patient Name | `MCS\.\s*([A-Z\s]+)` |
-| Hemoglobin | `HEMOGLOBIN\s+([\d.]+)` |
-| WBC | `TOTAL COUNT\s+([\d,]+)` |
-| RBC | `RED BLOOD CELLS\s+([\d.]+)` |
-| Platelets | `PLATELET COUNT\s+([\d.]+)` |
-
-### Normal Ranges
-
-| Test | Normal Range |
-|------|-------------|
-| Hemoglobin | 11.0-16.0 g/dl |
-| WBC | 4000-11000 cells/cu |
-| Platelets | 1.40-4.50 Lakhs/cu |
-
----
-
-## 📡 API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/` | GET | Frontend UI |
-| `/api/health` | GET | Health check |
-| `/analyze-report` | POST | Upload & analyze |
-
----
-
-## 🧪 Test
-
-```bash
-# Health check
-curl http://localhost:8001/api/health
-
-# Upload report
-curl -X POST "http://localhost:8001/analyze-report" -F "file=@report.png"
-```
-
----
-
-## 📦 Key Dependencies
-
-| Package | Purpose |
-|---------|---------|
-| `fastapi` | Web framework |
-| `uvicorn` | Server |
-| `paddleocr` | OCR engine |
-| `opencv-python` | Image preprocessing |
-| `numpy` | Array operations |
-
----
-
-## 🔧 Troubleshooting
-
-| Issue | Solution |
-|-------|----------|
-| Port 8001 in use | Change port in `app.py` |
-| PaddleOCR error | `pip install numpy==1.24.3 opencv-python==4.6.0.66` |
-| Module not found | `pip install -r requirements.txt` |
-
-
-
-
-
-
-
-
+1. **Clone the repo:**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/multi-modal-ai-agent.git
+   cd multi-modal-ai-agent
