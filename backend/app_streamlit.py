@@ -8,9 +8,9 @@ if not hasattr(np, 'sctypes'):
                   'complex': [np.complex64, np.complex128],
                   'others': [bool, object, bytes, str, np.void]}
 
-# ... rest of your code ...
 import streamlit as st
 import os
+import base64
 from services.ocr_service import extract_text_from_image
 from services.llm_service import analyze_medical_report
 
@@ -22,15 +22,20 @@ st.markdown("Upload a medical report image (PNG/JPG) to extract data and generat
 uploaded_file = st.file_uploader("Choose a medical report image", type=["png", "jpg", "jpeg"])
 
 if uploaded_file is not None:
-    # 1. Read the bytes directly from the uploader
+    # 1. Read bytes
     image_bytes = uploaded_file.getvalue()
     
-    # 2. Display the image using the bytes (This NEVER breaks)
-    st.image(image_bytes, caption="Uploaded Report", width=400)
+    # 2. THE FOOLPROOF IMAGE FIX: Display via Base64 HTML
+    b64_img = base64.b64encode(image_bytes).decode()
+    st.markdown(
+        f'<img src="data:image/png;base64,{b64_img}" width="400" style="border-radius: 10px;">', 
+        unsafe_allow_html=True
+    )
+    st.caption("Uploaded Report")
     
     if st.button("🔍 Analyze Report"):
         with st.spinner("Extracting text and analyzing..."):
-            # 3. Save the temp file for OCR
+            # Save temp file for OCR
             temp_path = f"temp_{uploaded_file.name}"
             with open(temp_path, "wb") as f:
                 f.write(image_bytes)
@@ -41,7 +46,7 @@ if uploaded_file is not None:
             # Step 2: Analysis
             result = analyze_medical_report(extracted_text)
             
-            # Clean up temp file
+            # Clean up
             if os.path.exists(temp_path):
                 os.remove(temp_path)
             
