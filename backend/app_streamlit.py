@@ -15,6 +15,14 @@ from services.ocr_service import extract_text_from_image
 from services.llm_service import analyze_medical_report
 
 st.set_page_config(page_title="Medical AI Agent", page_icon="🏥", layout="wide")
+st.set_page_config(page_title="Medical AI Agent", page_icon="🏥", layout="wide")
+
+def local_css(file_name):
+    if os.path.exists(file_name):
+        with open(file_name) as f:
+            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+local_css("style.css")
 
 st.title("🏥 Medical AI Agent")
 st.markdown("Upload a medical report image (PNG/JPG) to extract data and generate an AI summary.")
